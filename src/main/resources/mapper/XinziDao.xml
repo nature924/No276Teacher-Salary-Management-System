@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.XinziDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.laoshi_id as laoshiId
+        ,a.xinzi_uuid_number as xinziUuidNumber
+        ,a.xinzi_month as xinziMonth
+        ,a.jiben_jine as jibenJine
+        ,a.jiangjin_jine as jiangjinJine
+        ,a.jixiao_jine as jixiaoJine
+        ,a.butie_jine as butieJine
+        ,a.yingdao_number as yingdaoNumber
+        ,a.shidao_number as shidaoNumber
+        ,a.kouchu_jine as kouchuJine
+        ,a.shifa_jine as shifaJine
+        ,a.xinzi_content as xinziContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.XinziView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,laoshi.laoshi_uuid_number as laoshiUuidNumber
+        ,laoshi.laoshi_name as laoshiName
+        ,laoshi.laoshi_phone as laoshiPhone
+        ,laoshi.laoshi_id_number as laoshiIdNumber
+        ,laoshi.laoshi_photo as laoshiPhoto
+        ,laoshi.laoshi_email as laoshiEmail
+        ,laoshi.jinyong_types as jinyongTypes
+
+        FROM xinzi  a
+        left JOIN laoshi laoshi ON a.laoshi_id = laoshi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.laoshiId != null and params.laoshiId != ''">
+                and (
+                    a.laoshi_id = #{params.laoshiId}
+                )
+            </if>
+            <if test=" params.xinziUuidNumber != '' and params.xinziUuidNumber != null and params.xinziUuidNumber != 'null' ">
+                and a.xinzi_uuid_number like CONCAT('%',#{params.xinziUuidNumber},'%')
+            </if>
+            <if test=" params.xinziMonth != '' and params.xinziMonth != null and params.xinziMonth != 'null' ">
+                and a.xinzi_month like CONCAT('%',#{params.xinziMonth},'%')
+            </if>
+            <if test="params.jibenJineStart != null ">
+                <![CDATA[  and a.jiben_jine >= #{params.jibenJineStart}   ]]>
+            </if>
+            <if test="params.jibenJineEnd != null ">
+                <![CDATA[  and a.jiben_jine <= #{params.jibenJineEnd}   ]]>
+            </if>
+            <if test="params.jibenJine != null and params.jibenJine != ''">
+                and a.jiben_jine = #{params.jibenJine}
+            </if>
+            <if test="params.jiangjinJineStart != null ">
+                <![CDATA[  and a.jiangjin_jine >= #{params.jiangjinJineStart}   ]]>
+            </if>
+            <if test="params.jiangjinJineEnd != null ">
+                <![CDATA[  and a.jiangjin_jine <= #{params.jiangjinJineEnd}   ]]>
+            </if>
+            <if test="params.jiangjinJine != null and params.jiangjinJine != ''">
+                and a.jiangjin_jine = #{params.jiangjinJine}
+            </if>
+            <if test="params.jixiaoJineStart != null ">
+                <![CDATA[  and a.jixiao_jine >= #{params.jixiaoJineStart}   ]]>
+            </if>
+            <if test="params.jixiaoJineEnd != null ">
+                <![CDATA[  and a.jixiao_jine <= #{params.jixiaoJineEnd}   ]]>
+            </if>
+            <if test="params.jixiaoJine != null and params.jixiaoJine != ''">
+                and a.jixiao_jine = #{params.jixiaoJine}
+            </if>
+            <if test="params.butieJineStart != null ">
+                <![CDATA[  and a.butie_jine >= #{params.butieJineStart}   ]]>
+            </if>
+            <if test="params.butieJineEnd != null ">
+                <![CDATA[  and a.butie_jine <= #{params.butieJineEnd}   ]]>
+            </if>
+            <if test="params.butieJine != null and params.butieJine != ''">
+                and a.butie_jine = #{params.butieJine}
+            </if>
+            <if test="params.yingdaoNumberStart != null and params.yingdaoNumberStart != ''">
+                <![CDATA[  and a.yingdao_number >= #{params.yingdaoNumberStart}   ]]>
+            </if>
+            <if test="params.yingdaoNumberEnd != null and params.yingdaoNumberEnd != ''">
+                <![CDATA[  and a.yingdao_number <= #{params.yingdaoNumberEnd}   ]]>
+            </if>
+             <if test="params.yingdaoNumber != null and params.yingdaoNumber != ''">
+                and a.yingdao_number = #{params.yingdaoNumber}
+             </if>
+            <if test="params.shidaoNumberStart != null and params.shidaoNumberStart != ''">
+                <![CDATA[  and a.shidao_number >= #{params.shidaoNumberStart}   ]]>
+            </if>
+            <if test="params.shidaoNumberEnd != null and params.shidaoNumberEnd != ''">
+                <![CDATA[  and a.shidao_number <= #{params.shidaoNumberEnd}   ]]>
+            </if>
+             <if test="params.shidaoNumber != null and params.shidaoNumber != ''">
+                and a.shidao_number = #{params.shidaoNumber}
+             </if>
+            <if test="params.kouchuJineStart != null ">
+                <![CDATA[  and a.kouchu_jine >= #{params.kouchuJineStart}   ]]>
+            </if>
+            <if test="params.kouchuJineEnd != null ">
+                <![CDATA[  and a.kouchu_jine <= #{params.kouchuJineEnd}   ]]>
+            </if>
+            <if test="params.kouchuJine != null and params.kouchuJine != ''">
+                and a.kouchu_jine = #{params.kouchuJine}
+            </if>
+            <if test="params.shifaJineStart != null ">
+                <![CDATA[  and a.shifa_jine >= #{params.shifaJineStart}   ]]>
+            </if>
+            <if test="params.shifaJineEnd != null ">
+                <![CDATA[  and a.shifa_jine <= #{params.shifaJineEnd}   ]]>
+            </if>
+            <if test="params.shifaJine != null and params.shifaJine != ''">
+                and a.shifa_jine = #{params.shifaJine}
+            </if>
+            <if test=" params.xinziContent != '' and params.xinziContent != null and params.xinziContent != 'null' ">
+                and a.xinzi_content like CONCAT('%',#{params.xinziContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断老师的id不为空 -->
+            <if test=" params.laoshiIdNotNull != '' and params.laoshiIdNotNull != null and params.laoshiIdNotNull != 'null' ">
+                and a.laoshi_id IS NOT NULL
+            </if>
+            <if test=" params.laoshiUuidNumber != '' and params.laoshiUuidNumber != null and params.laoshiUuidNumber != 'null' ">
+                and laoshi.laoshi_uuid_number like CONCAT('%',#{params.laoshiUuidNumber},'%')
+            </if>
+            <if test=" params.laoshiName != '' and params.laoshiName != null and params.laoshiName != 'null' ">
+                and laoshi.laoshi_name like CONCAT('%',#{params.laoshiName},'%')
+            </if>
+            <if test=" params.laoshiPhone != '' and params.laoshiPhone != null and params.laoshiPhone != 'null' ">
+                and laoshi.laoshi_phone like CONCAT('%',#{params.laoshiPhone},'%')
+            </if>
+            <if test=" params.laoshiIdNumber != '' and params.laoshiIdNumber != null and params.laoshiIdNumber != 'null' ">
+                and laoshi.laoshi_id_number like CONCAT('%',#{params.laoshiIdNumber},'%')
+            </if>
+            <if test=" params.laoshiEmail != '' and params.laoshiEmail != null and params.laoshiEmail != 'null' ">
+                and laoshi.laoshi_email like CONCAT('%',#{params.laoshiEmail},'%')
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and laoshi.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

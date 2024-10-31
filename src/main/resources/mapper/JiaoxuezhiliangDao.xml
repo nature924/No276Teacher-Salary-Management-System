@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiaoxuezhiliangDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.laoshi_id as laoshiId
+        ,a.jiaoxuezhiliang_uuid_number as jiaoxuezhiliangUuidNumber
+        ,a.jiaoxuezhiliang_address as jiaoxuezhiliangAddress
+        ,a.jiaoxuezhiliang_file as jiaoxuezhiliangFile
+        ,a.jiaoxuezhiliang_time as jiaoxuezhiliangTime
+        ,a.jiaoxuezhiliang_types as jiaoxuezhiliangTypes
+        ,a.jiaoxuezhiliang_content as jiaoxuezhiliangContent
+        ,a.jiaoxuezhiliang_pingyu_content as jiaoxuezhiliangPingyuContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiaoxuezhiliangView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,laoshi.laoshi_uuid_number as laoshiUuidNumber
+        ,laoshi.laoshi_name as laoshiName
+        ,laoshi.laoshi_phone as laoshiPhone
+        ,laoshi.laoshi_id_number as laoshiIdNumber
+        ,laoshi.laoshi_photo as laoshiPhoto
+        ,laoshi.laoshi_email as laoshiEmail
+        ,laoshi.jinyong_types as jinyongTypes
+
+        FROM jiaoxuezhiliang  a
+        left JOIN laoshi laoshi ON a.laoshi_id = laoshi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.laoshiId != null and params.laoshiId != ''">
+                and (
+                    a.laoshi_id = #{params.laoshiId}
+                )
+            </if>
+            <if test=" params.jiaoxuezhiliangUuidNumber != '' and params.jiaoxuezhiliangUuidNumber != null and params.jiaoxuezhiliangUuidNumber != 'null' ">
+                and a.jiaoxuezhiliang_uuid_number like CONCAT('%',#{params.jiaoxuezhiliangUuidNumber},'%')
+            </if>
+            <if test=" params.jiaoxuezhiliangAddress != '' and params.jiaoxuezhiliangAddress != null and params.jiaoxuezhiliangAddress != 'null' ">
+                and a.jiaoxuezhiliang_address like CONCAT('%',#{params.jiaoxuezhiliangAddress},'%')
+            </if>
+            <if test=" params.jiaoxuezhiliangTimeStart != '' and params.jiaoxuezhiliangTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jiaoxuezhiliang_time) >= UNIX_TIMESTAMP(#{params.jiaoxuezhiliangTimeStart}) ]]>
+            </if>
+            <if test=" params.jiaoxuezhiliangTimeEnd != '' and params.jiaoxuezhiliangTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jiaoxuezhiliang_time) <= UNIX_TIMESTAMP(#{params.jiaoxuezhiliangTimeEnd}) ]]>
+            </if>
+            <if test="params.jiaoxuezhiliangTime != null and params.jiaoxuezhiliangTime != ''">
+                and a.jiaoxuezhiliang_time = #{params.jiaoxuezhiliangTime}
+            </if>
+            <if test="params.jiaoxuezhiliangTypes != null and params.jiaoxuezhiliangTypes != ''">
+                and a.jiaoxuezhiliang_types = #{params.jiaoxuezhiliangTypes}
+            </if>
+            <if test=" params.jiaoxuezhiliangContent != '' and params.jiaoxuezhiliangContent != null and params.jiaoxuezhiliangContent != 'null' ">
+                and a.jiaoxuezhiliang_content like CONCAT('%',#{params.jiaoxuezhiliangContent},'%')
+            </if>
+            <if test=" params.jiaoxuezhiliangPingyuContent != '' and params.jiaoxuezhiliangPingyuContent != null and params.jiaoxuezhiliangPingyuContent != 'null' ">
+                and a.jiaoxuezhiliang_pingyu_content like CONCAT('%',#{params.jiaoxuezhiliangPingyuContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断老师的id不为空 -->
+            <if test=" params.laoshiIdNotNull != '' and params.laoshiIdNotNull != null and params.laoshiIdNotNull != 'null' ">
+                and a.laoshi_id IS NOT NULL
+            </if>
+            <if test=" params.laoshiUuidNumber != '' and params.laoshiUuidNumber != null and params.laoshiUuidNumber != 'null' ">
+                and laoshi.laoshi_uuid_number like CONCAT('%',#{params.laoshiUuidNumber},'%')
+            </if>
+            <if test=" params.laoshiName != '' and params.laoshiName != null and params.laoshiName != 'null' ">
+                and laoshi.laoshi_name like CONCAT('%',#{params.laoshiName},'%')
+            </if>
+            <if test=" params.laoshiPhone != '' and params.laoshiPhone != null and params.laoshiPhone != 'null' ">
+                and laoshi.laoshi_phone like CONCAT('%',#{params.laoshiPhone},'%')
+            </if>
+            <if test=" params.laoshiIdNumber != '' and params.laoshiIdNumber != null and params.laoshiIdNumber != 'null' ">
+                and laoshi.laoshi_id_number like CONCAT('%',#{params.laoshiIdNumber},'%')
+            </if>
+            <if test=" params.laoshiEmail != '' and params.laoshiEmail != null and params.laoshiEmail != 'null' ">
+                and laoshi.laoshi_email like CONCAT('%',#{params.laoshiEmail},'%')
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and laoshi.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

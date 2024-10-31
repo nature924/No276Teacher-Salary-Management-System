@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TiaokeDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.laoshi_id as laoshiId
+        ,a.tiaoke_uuid_number as tiaokeUuidNumber
+        ,a.tiaoke_name as tiaokeName
+        ,a.tiaoke_types as tiaokeTypes
+        ,a.tiaoke_yuan as tiaokeYuan
+        ,a.tiaoke_xian as tiaokeXian
+        ,a.tiaoke_content as tiaokeContent
+        ,a.insert_time as insertTime
+        ,a.tiaoke_yesno_types as tiaokeYesnoTypes
+        ,a.tiaoke_yesno_text as tiaokeYesnoText
+        ,a.tiaoke_shenhe_time as tiaokeShenheTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.TiaokeView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,laoshi.laoshi_uuid_number as laoshiUuidNumber
+        ,laoshi.laoshi_name as laoshiName
+        ,laoshi.laoshi_phone as laoshiPhone
+        ,laoshi.laoshi_id_number as laoshiIdNumber
+        ,laoshi.laoshi_photo as laoshiPhoto
+        ,laoshi.laoshi_email as laoshiEmail
+        ,laoshi.jinyong_types as jinyongTypes
+
+        FROM tiaoke  a
+        left JOIN laoshi laoshi ON a.laoshi_id = laoshi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.laoshiId != null and params.laoshiId != ''">
+                and (
+                    a.laoshi_id = #{params.laoshiId}
+                )
+            </if>
+            <if test=" params.tiaokeUuidNumber != '' and params.tiaokeUuidNumber != null and params.tiaokeUuidNumber != 'null' ">
+                and a.tiaoke_uuid_number like CONCAT('%',#{params.tiaokeUuidNumber},'%')
+            </if>
+            <if test=" params.tiaokeName != '' and params.tiaokeName != null and params.tiaokeName != 'null' ">
+                and a.tiaoke_name like CONCAT('%',#{params.tiaokeName},'%')
+            </if>
+            <if test="params.tiaokeTypes != null and params.tiaokeTypes != ''">
+                and a.tiaoke_types = #{params.tiaokeTypes}
+            </if>
+            <if test=" params.tiaokeYuan != '' and params.tiaokeYuan != null and params.tiaokeYuan != 'null' ">
+                and a.tiaoke_yuan like CONCAT('%',#{params.tiaokeYuan},'%')
+            </if>
+            <if test=" params.tiaokeXian != '' and params.tiaokeXian != null and params.tiaokeXian != 'null' ">
+                and a.tiaoke_xian like CONCAT('%',#{params.tiaokeXian},'%')
+            </if>
+            <if test=" params.tiaokeContent != '' and params.tiaokeContent != null and params.tiaokeContent != 'null' ">
+                and a.tiaoke_content like CONCAT('%',#{params.tiaokeContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test="params.tiaokeYesnoTypes != null and params.tiaokeYesnoTypes != ''">
+                and a.tiaoke_yesno_types = #{params.tiaokeYesnoTypes}
+            </if>
+            <if test=" params.tiaokeYesnoText != '' and params.tiaokeYesnoText != null and params.tiaokeYesnoText != 'null' ">
+                and a.tiaoke_yesno_text like CONCAT('%',#{params.tiaokeYesnoText},'%')
+            </if>
+            <if test=" params.tiaokeShenheTimeStart != '' and params.tiaokeShenheTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.tiaoke_shenhe_time) >= UNIX_TIMESTAMP(#{params.tiaokeShenheTimeStart}) ]]>
+            </if>
+            <if test=" params.tiaokeShenheTimeEnd != '' and params.tiaokeShenheTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.tiaoke_shenhe_time) <= UNIX_TIMESTAMP(#{params.tiaokeShenheTimeEnd}) ]]>
+            </if>
+            <if test="params.tiaokeShenheTime != null and params.tiaokeShenheTime != ''">
+                and a.tiaoke_shenhe_time = #{params.tiaokeShenheTime}
+            </if>
+
+                <!-- 判断老师的id不为空 -->
+            <if test=" params.laoshiIdNotNull != '' and params.laoshiIdNotNull != null and params.laoshiIdNotNull != 'null' ">
+                and a.laoshi_id IS NOT NULL
+            </if>
+            <if test=" params.laoshiUuidNumber != '' and params.laoshiUuidNumber != null and params.laoshiUuidNumber != 'null' ">
+                and laoshi.laoshi_uuid_number like CONCAT('%',#{params.laoshiUuidNumber},'%')
+            </if>
+            <if test=" params.laoshiName != '' and params.laoshiName != null and params.laoshiName != 'null' ">
+                and laoshi.laoshi_name like CONCAT('%',#{params.laoshiName},'%')
+            </if>
+            <if test=" params.laoshiPhone != '' and params.laoshiPhone != null and params.laoshiPhone != 'null' ">
+                and laoshi.laoshi_phone like CONCAT('%',#{params.laoshiPhone},'%')
+            </if>
+            <if test=" params.laoshiIdNumber != '' and params.laoshiIdNumber != null and params.laoshiIdNumber != 'null' ">
+                and laoshi.laoshi_id_number like CONCAT('%',#{params.laoshiIdNumber},'%')
+            </if>
+            <if test=" params.laoshiEmail != '' and params.laoshiEmail != null and params.laoshiEmail != 'null' ">
+                and laoshi.laoshi_email like CONCAT('%',#{params.laoshiEmail},'%')
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and laoshi.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

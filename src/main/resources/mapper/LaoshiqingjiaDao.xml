@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.LaoshiqingjiaDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.laoshi_id as laoshiId
+        ,a.laoshiqingjia_text as laoshiqingjiaText
+        ,a.laoshiqingjia_types as laoshiqingjiaTypes
+        ,a.insert_time as insertTime
+        ,a.laoshiqingjia_time as laoshiqingjiaTime
+        ,a.laoshiqingjia_number as laoshiqingjiaNumber
+        ,a.laoshiqingjia_yesno_types as laoshiqingjiaYesnoTypes
+        ,a.laoshiqingjia_yesno_text as laoshiqingjiaYesnoText
+        ,a.laoshiqingjia_shenhe_time as laoshiqingjiaShenheTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.LaoshiqingjiaView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,laoshi.laoshi_uuid_number as laoshiUuidNumber
+        ,laoshi.laoshi_name as laoshiName
+        ,laoshi.laoshi_phone as laoshiPhone
+        ,laoshi.laoshi_id_number as laoshiIdNumber
+        ,laoshi.laoshi_photo as laoshiPhoto
+        ,laoshi.laoshi_email as laoshiEmail
+        ,laoshi.jinyong_types as jinyongTypes
+
+        FROM laoshiqingjia  a
+        left JOIN laoshi laoshi ON a.laoshi_id = laoshi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.laoshiId != null and params.laoshiId != ''">
+                and (
+                    a.laoshi_id = #{params.laoshiId}
+                )
+            </if>
+            <if test=" params.laoshiqingjiaText != '' and params.laoshiqingjiaText != null and params.laoshiqingjiaText != 'null' ">
+                and a.laoshiqingjia_text like CONCAT('%',#{params.laoshiqingjiaText},'%')
+            </if>
+            <if test="params.laoshiqingjiaTypes != null and params.laoshiqingjiaTypes != ''">
+                and a.laoshiqingjia_types = #{params.laoshiqingjiaTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.laoshiqingjiaTimeStart != '' and params.laoshiqingjiaTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.laoshiqingjia_time) >= UNIX_TIMESTAMP(#{params.laoshiqingjiaTimeStart}) ]]>
+            </if>
+            <if test=" params.laoshiqingjiaTimeEnd != '' and params.laoshiqingjiaTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.laoshiqingjia_time) <= UNIX_TIMESTAMP(#{params.laoshiqingjiaTimeEnd}) ]]>
+            </if>
+            <if test="params.laoshiqingjiaTime != null and params.laoshiqingjiaTime != ''">
+                and a.laoshiqingjia_time = #{params.laoshiqingjiaTime}
+            </if>
+            <if test="params.laoshiqingjiaNumberStart != null and params.laoshiqingjiaNumberStart != ''">
+                <![CDATA[  and a.laoshiqingjia_number >= #{params.laoshiqingjiaNumberStart}   ]]>
+            </if>
+            <if test="params.laoshiqingjiaNumberEnd != null and params.laoshiqingjiaNumberEnd != ''">
+                <![CDATA[  and a.laoshiqingjia_number <= #{params.laoshiqingjiaNumberEnd}   ]]>
+            </if>
+             <if test="params.laoshiqingjiaNumber != null and params.laoshiqingjiaNumber != ''">
+                and a.laoshiqingjia_number = #{params.laoshiqingjiaNumber}
+             </if>
+            <if test="params.laoshiqingjiaYesnoTypes != null and params.laoshiqingjiaYesnoTypes != ''">
+                and a.laoshiqingjia_yesno_types = #{params.laoshiqingjiaYesnoTypes}
+            </if>
+            <if test=" params.laoshiqingjiaYesnoText != '' and params.laoshiqingjiaYesnoText != null and params.laoshiqingjiaYesnoText != 'null' ">
+                and a.laoshiqingjia_yesno_text like CONCAT('%',#{params.laoshiqingjiaYesnoText},'%')
+            </if>
+            <if test=" params.laoshiqingjiaShenheTimeStart != '' and params.laoshiqingjiaShenheTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.laoshiqingjia_shenhe_time) >= UNIX_TIMESTAMP(#{params.laoshiqingjiaShenheTimeStart}) ]]>
+            </if>
+            <if test=" params.laoshiqingjiaShenheTimeEnd != '' and params.laoshiqingjiaShenheTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.laoshiqingjia_shenhe_time) <= UNIX_TIMESTAMP(#{params.laoshiqingjiaShenheTimeEnd}) ]]>
+            </if>
+            <if test="params.laoshiqingjiaShenheTime != null and params.laoshiqingjiaShenheTime != ''">
+                and a.laoshiqingjia_shenhe_time = #{params.laoshiqingjiaShenheTime}
+            </if>
+
+                <!-- 判断老师的id不为空 -->
+            <if test=" params.laoshiIdNotNull != '' and params.laoshiIdNotNull != null and params.laoshiIdNotNull != 'null' ">
+                and a.laoshi_id IS NOT NULL
+            </if>
+            <if test=" params.laoshiUuidNumber != '' and params.laoshiUuidNumber != null and params.laoshiUuidNumber != 'null' ">
+                and laoshi.laoshi_uuid_number like CONCAT('%',#{params.laoshiUuidNumber},'%')
+            </if>
+            <if test=" params.laoshiName != '' and params.laoshiName != null and params.laoshiName != 'null' ">
+                and laoshi.laoshi_name like CONCAT('%',#{params.laoshiName},'%')
+            </if>
+            <if test=" params.laoshiPhone != '' and params.laoshiPhone != null and params.laoshiPhone != 'null' ">
+                and laoshi.laoshi_phone like CONCAT('%',#{params.laoshiPhone},'%')
+            </if>
+            <if test=" params.laoshiIdNumber != '' and params.laoshiIdNumber != null and params.laoshiIdNumber != 'null' ">
+                and laoshi.laoshi_id_number like CONCAT('%',#{params.laoshiIdNumber},'%')
+            </if>
+            <if test=" params.laoshiEmail != '' and params.laoshiEmail != null and params.laoshiEmail != 'null' ">
+                and laoshi.laoshi_email like CONCAT('%',#{params.laoshiEmail},'%')
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and laoshi.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
